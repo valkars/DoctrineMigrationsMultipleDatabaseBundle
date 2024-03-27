@@ -1,39 +1,24 @@
 <?php
 
-namespace AvaiBookSports\Bundle\MigrationsMutlipleDatabase\Command\Doctrine;
+namespace AvaiBookSports\Bundle\MigrationsMultipleDatabase\Command\Doctrine;
 
-use AvaiBookSports\Bundle\MigrationsMutlipleDatabase\Configuration\Configuration;
+use AvaiBookSports\Bundle\MigrationsMultipleDatabase\Configuration\Configuration;
 use Doctrine\Migrations\DependencyFactory;
-use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 
 abstract class AbstractCommand extends Command
 {
-    // Overridden for compatibility with Symfony 4.4
-    // see https://tldp.org/LDP/abs/html/exitcodes.html
-    public const SUCCESS = 0;
-
-    public const FAILURE = 1;
-
-    public const INVALID = 2;
-
-    /**
-     * @var Configuration
-     */
-    private $configuration;
-
-    public function __construct(Configuration $configuration)
+    public function __construct(private readonly Configuration $configuration)
     {
         parent::__construct();
-        $this->configuration = $configuration;
     }
 
     /**
-     * @throws RuntimeException
-     *
      * @return DependencyFactory[]
+     *
+     * @throws \RuntimeException
      */
-    public function getDependencyFactories(string $entityManager = null): array
+    public function getDependencyFactories(?string $entityManager = null): array
     {
         $dependencyFactories = [];
 
@@ -44,7 +29,7 @@ abstract class AbstractCommand extends Command
         }
 
         if (0 === count($dependencyFactories)) {
-            throw new RuntimeException('No entity manager found');
+            throw new \RuntimeException('No entity manager found');
         }
 
         return $dependencyFactories;
