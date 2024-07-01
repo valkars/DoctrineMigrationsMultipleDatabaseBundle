@@ -16,22 +16,23 @@
 		}
 	],
 	"require": {
-		"doctrine/doctrine-bundle": "~1.0|~2.0",
+		"php": ">=8.2",
+		"doctrine/doctrine-bundle": "~2.0",
+		"doctrine/doctrine-migrations-bundle": "^3.2",
 		"doctrine/migrations": "~3.0",
-		"php": ">=7.2",
-		"symfony/framework-bundle": "~3.4|~4.0|~5.0|~6.0",
-		"doctrine/doctrine-migrations-bundle": "^3"
+		"symfony/framework-bundle": "~6.0|~7.0"
 	},
 	"require-dev": {
+		"doctrine/orm": "^2.6",
+		"friendsofphp/php-cs-fixer": "^3.0",
 		"phpstan/phpstan": "^0.12.48",
 		"phpstan/phpstan-symfony": "^0.12.8",
 		"phpstan/phpstan-strict-rules": "^0.12.5",
-		"doctrine/orm": "^2.6",
-		"friendsofphp/php-cs-fixer": "^2.16"
+		"roave/security-advisories": "dev-latest"
 	},
 	"autoload": {
 		"psr-4": {
-			"AvaiBookSports\\Bundle\\MigrationsMutlipleDatabase\\": "src/"
+			"AvaiBookSports\\Bundle\\MigrationsMultipleDatabase\\": "src/"
 		}
 	}
 }

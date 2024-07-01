@@ -1,6 +1,6 @@
 <?php
 
-namespace AvaiBookSports\Bundle\MigrationsMutlipleDatabase\Command\Doctrine;
+namespace AvaiBookSports\Bundle\MigrationsMultipleDatabase\Command\Doctrine;
 
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,7 +33,7 @@ EOT
 
         $newInput->setInteractive($input->isInteractive());
 
-        foreach ($this->getDependencyFactories(strval($input->getOption('em'))) as $dependencyFactory) {
+        foreach ($this->getDependencyFactories((string) $input->getOption('em')) as $dependencyFactory) {
             $otherCommand = new \Doctrine\Migrations\Tools\Console\Command\StatusCommand($dependencyFactory);
             $otherCommand->run($newInput, $output);
         }

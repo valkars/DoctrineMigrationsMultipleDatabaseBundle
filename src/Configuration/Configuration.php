@@ -1,13 +1,13 @@
 <?php
 
-namespace AvaiBookSports\Bundle\MigrationsMutlipleDatabase\Configuration;
+namespace AvaiBookSports\Bundle\MigrationsMultipleDatabase\Configuration;
 
 use Doctrine\Migrations\DependencyFactory;
 
 class Configuration
 {
     /** @var DependencyFactory[] */
-    private $dependencyFactories = [];
+    private array $dependencyFactories = [];
 
     public function addDependencyFactory(string $name, DependencyFactory $entityManager): self
     {
@@ -34,10 +34,6 @@ class Configuration
 
     public function getConfigurationByEntityManagerName(string $name): ?DependencyFactory
     {
-        if (array_key_exists($name, $this->dependencyFactories)) {
-            return $this->dependencyFactories[$name];
-        }
-
-        return null;
+        return $this->dependencyFactories[$name] ?? null;
     }
 }

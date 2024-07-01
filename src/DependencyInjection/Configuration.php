@@ -2,21 +2,14 @@
 
 declare(strict_types=1);
 
-namespace AvaiBookSports\Bundle\MigrationsMutlipleDatabase\DependencyInjection;
+namespace AvaiBookSports\Bundle\MigrationsMultipleDatabase\DependencyInjection;
 
 use Doctrine\Bundle\MigrationsBundle\DependencyInjection\Configuration as DoctrineMigrationsConfiguration;
-use ReflectionClass;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
-/**
- * {@inheritdoc}
- */
 class Configuration extends DoctrineMigrationsConfiguration implements ConfigurationInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('doctrine_migrations_multiple_database');
@@ -46,7 +39,7 @@ class Configuration extends DoctrineMigrationsConfiguration implements Configura
                             ->validate()
                                 ->ifTrue(static function ($v) {
                                     return count(array_filter(array_keys($v), static function (string $doctrineService): bool {
-                                        return 0 !== strpos($doctrineService, 'Doctrine\Migrations\\');
+                                        return !str_starts_with($doctrineService, 'Doctrine\Migrations\\');
                                     }));
                                 })
                                 ->thenInvalid('Valid services for the DoctrineMigrationsBundle must be in the "Doctrine\Migrations" namespace.')
@@ -61,7 +54,7 @@ class Configuration extends DoctrineMigrationsConfiguration implements Configura
                             ->validate()
                                 ->ifTrue(static function ($v) {
                                     return count(array_filter(array_keys($v), static function (string $doctrineService): bool {
-                                        return 0 !== strpos($doctrineService, 'Doctrine\Migrations\\');
+                                        return !str_starts_with($doctrineService, 'Doctrine\Migrations\\');
                                     }));
                                 })
                                 ->thenInvalid('Valid callables for the DoctrineMigrationsBundle must be in the "Doctrine\Migrations" namespace.')
@@ -145,12 +138,12 @@ class Configuration extends DoctrineMigrationsConfiguration implements Configura
     {
         $constPrefix = 'VERSIONS_ORGANIZATION_';
         $prefixLen = strlen($constPrefix);
-        $refClass = new ReflectionClass('Doctrine\Migrations\Configuration\Configuration');
+        $refClass = new \ReflectionClass(\Doctrine\Migrations\Configuration\Configuration::class);
         $constsArray = $refClass->getConstants();
         $namesArray = [];
 
         foreach ($constsArray as $key => $value) {
-            if (0 !== strpos($key, $constPrefix)) {
+            if (!str_starts_with($key, $constPrefix)) {
                 continue;
             }
 

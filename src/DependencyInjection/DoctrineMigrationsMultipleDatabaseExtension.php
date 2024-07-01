@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AvaiBookSports\Bundle\MigrationsMutlipleDatabase\DependencyInjection;
+namespace AvaiBookSports\Bundle\MigrationsMultipleDatabase\DependencyInjection;
 
 use Doctrine\Bundle\MigrationsBundle\DependencyInjection\DoctrineMigrationsExtension;
 use Doctrine\Migrations\Configuration\EntityManager\ExistingEntityManager;
@@ -10,7 +10,6 @@ use Doctrine\Migrations\Configuration\Migration\ExistingConfiguration;
 use Doctrine\Migrations\DependencyFactory;
 use Doctrine\Migrations\Metadata\Storage\MetadataStorage;
 use Doctrine\Migrations\Metadata\Storage\TableMetadataStorageConfiguration;
-use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -135,7 +134,7 @@ class DoctrineMigrationsMultipleDatabaseExtension extends DoctrineMigrationsExte
         $bundleMetadata = $container->getParameter('kernel.bundles_metadata');
 
         if (!isset($bundleMetadata[$bundleName])) {
-            throw new RuntimeException(sprintf('The bundle "%s" has not been registered, available bundles: %s', $bundleName, implode(', ', array_keys($bundleMetadata))));
+            throw new \RuntimeException(sprintf('The bundle "%s" has not been registered, available bundles: %s', $bundleName, implode(', ', array_keys($bundleMetadata))));
         }
 
         return $bundleMetadata[$bundleName]['path'];
