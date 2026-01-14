@@ -4,21 +4,24 @@ declare(strict_types=1);
 
 namespace AvaiBookSports\Bundle\MigrationsMultipleDatabase\DependencyInjection;
 
-use Doctrine\Bundle\MigrationsBundle\DependencyInjection\DoctrineMigrationsExtension;
+use Doctrine\Bundle\MigrationsBundle\Collector\MigrationsCollector;
+use Doctrine\Bundle\MigrationsBundle\Collector\MigrationsFlattener;
 use Doctrine\Migrations\Configuration\EntityManager\ExistingEntityManager;
 use Doctrine\Migrations\Configuration\Migration\ExistingConfiguration;
 use Doctrine\Migrations\DependencyFactory;
 use Doctrine\Migrations\Metadata\Storage\MetadataStorage;
 use Doctrine\Migrations\Metadata\Storage\TableMetadataStorageConfiguration;
+use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 
-class DoctrineMigrationsMultipleDatabaseExtension extends DoctrineMigrationsExtension
+class DoctrineMigrationsMultipleDatabaseExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
@@ -117,13 +120,13 @@ class DoctrineMigrationsMultipleDatabaseExtension extends DoctrineMigrationsExte
 
     private function checkIfBundleRelativePath(string $path, ContainerBuilder $container): string
     {
-        if (isset($path[0]) && '@' === $path[0]) {
-            $pathParts = explode('/', $path);
+        if (isset($path[0]) && $path[0] === '@') {
+            $pathParts  = explode('/', $path);
             $bundleName = substr($pathParts[0], 1);
 
             $bundlePath = $this->getBundlePath($bundleName, $container);
 
-            return $bundlePath.substr($path, strlen('@'.$bundleName));
+            return $bundlePath . substr($path, strlen('@' . $bundleName));
         }
 
         return $path;
@@ -132,11 +135,44 @@ class DoctrineMigrationsMultipleDatabaseExtension extends DoctrineMigrationsExte
     private function getBundlePath(string $bundleName, ContainerBuilder $container): string
     {
         $bundleMetadata = $container->getParameter('kernel.bundles_metadata');
+        assert(is_array($bundleMetadata));
 
-        if (!isset($bundleMetadata[$bundleName])) {
-            throw new \RuntimeException(sprintf('The bundle "%s" has not been registered, available bundles: %s', $bundleName, implode(', ', array_keys($bundleMetadata))));
+        if (! isset($bundleMetadata[$bundleName])) {
+            throw new RuntimeException(sprintf(
+                'The bundle "%s" has not been registered, available bundles: %s',
+                $bundleName,
+                implode(', ', array_keys($bundleMetadata)),
+            ));
         }
 
         return $bundleMetadata[$bundleName]['path'];
+    }
+
+    private function registerCollector(ContainerBuilder $container): void
+    {
+        $flattenerDefinition = new Definition(MigrationsFlattener::class);
+        $container->setDefinition('doctrine_migrations.migrations_flattener', $flattenerDefinition);
+
+        $collectorDefinition = new Definition(MigrationsCollector::class, [
+            new Reference('doctrine.migrations.dependency_factory'),
+            new Reference('doctrine_migrations.migrations_flattener'),
+        ]);
+        $collectorDefinition
+            ->addTag('data_collector', [
+                'template' => '@DoctrineMigrations/Collector/migrations.html.twig',
+                'id' => 'doctrine_migrations',
+                'priority' => '249',
+            ]);
+        $container->setDefinition('doctrine_migrations.migrations_collector', $collectorDefinition);
+    }
+
+    public function getXsdValidationBasePath(): string
+    {
+        return __DIR__ . '/../../config/schema';
+    }
+
+    public function getNamespace(): string
+    {
+        return 'http://symfony.com/schema/dic/doctrine/migrations/3.0';
     }
 }

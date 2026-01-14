@@ -17,13 +17,13 @@
 	],
 	"require": {
 		"php": ">=8.2",
-		"doctrine/doctrine-bundle": "~2.0",
-		"doctrine/doctrine-migrations-bundle": "^3.2",
+		"doctrine/doctrine-bundle": "^2.0|^3.0",
+		"doctrine/doctrine-migrations-bundle": "^3.2|^4.0",
 		"doctrine/migrations": "~3.0",
-		"symfony/framework-bundle": "~6.0|~7.0"
+		"symfony/framework-bundle": "~6.0|~7.0|^8.0"
 	},
 	"require-dev": {
-		"doctrine/orm": "^2.6",
+		"doctrine/orm": "^2.6|^3.0",
 		"friendsofphp/php-cs-fixer": "^3.0",
 		"phpstan/phpstan": "^0.12.48",
 		"phpstan/phpstan-symfony": "^0.12.8",
