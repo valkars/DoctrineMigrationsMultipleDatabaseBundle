@@ -3,13 +3,18 @@
 declare(strict_types=1);
 
 namespace AvaiBookSports\Bundle\MigrationsMultipleDatabase\DependencyInjection;
-
-use Doctrine\Bundle\MigrationsBundle\DependencyInjection\Configuration as DoctrineMigrationsConfiguration;
+use ReflectionClass;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
-class Configuration extends DoctrineMigrationsConfiguration implements ConfigurationInterface
+use function array_keys;
+use function strlen;
+use function str_starts_with;
+use function substr;
+
+class Configuration implements ConfigurationInterface
 {
+    /** @return TreeBuilder<'array'> */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('doctrine_migrations_multiple_database');
@@ -130,24 +135,24 @@ class Configuration extends DoctrineMigrationsConfiguration implements Configura
     }
 
     /**
-     * Find organize migrations modes for their names.
+     * Find organize migrations modes for their names
      *
      * @return string[]
      */
     private function getOrganizeMigrationsModes(): array
     {
         $constPrefix = 'VERSIONS_ORGANIZATION_';
-        $prefixLen = strlen($constPrefix);
-        $refClass = new \ReflectionClass(\Doctrine\Migrations\Configuration\Configuration::class);
-        $constsArray = $refClass->getConstants();
-        $namesArray = [];
+        $prefixLen   = strlen($constPrefix);
+        $refClass    = new ReflectionClass('Doctrine\Migrations\Configuration\Configuration');
+        $constsArray = array_keys($refClass->getConstants());
+        $namesArray  = [];
 
-        foreach ($constsArray as $key => $value) {
-            if (!str_starts_with($key, $constPrefix)) {
+        foreach ($constsArray as $constant) {
+            if (! str_starts_with($constant, $constPrefix)) {
                 continue;
             }
 
-            $namesArray[] = substr($key, $prefixLen);
+            $namesArray[] = substr($constant, $prefixLen);
         }
 
         return $namesArray;
